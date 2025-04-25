@@ -4,3 +4,4 @@ venv/
 
 # Ignore all .txt files
 *.txt
+*.ogg
