@@ -10,7 +10,7 @@ def converter_para_wav():
     try:
         print("⏳ Convertendo OGG/Opus para WAV...")
         (
-            ffmpeg.input('audio.ogg')
+            ffmpeg.input('reels_ligia.mp3')
             .output('audio.wav',
                    ar=16000,  # Taxa de amostragem fixa
                    ac=1,       # Canal mono
