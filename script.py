@@ -113,12 +113,12 @@ def processar_entrada(args):
             print(f"⚠️ Erro ao remover arquivo temporário: {str(e)}")
 
 def main():
-    parser = argparse.ArgumentParser(description="Conversor de MP3 para texto com Whisper")
-    parser.add_argument("--entrada", required=True, help="Caminho do arquivo de entrada (MP3/WAV)")
-    parser.add_argument("--saida", default="transcricao.txt", help="Arquivo de saída para transcrição")
-    parser.add_argument("--modelo", default="large-v3", help="Modelo Whisper (tiny, base, small, medium, large-v3)")
-    parser.add_argument("--dispositivo", default="cpu", choices=["cpu", "cuda"], help="Dispositivo de processamento")
-    parser.add_argument("--manter-wav", action="store_true", help="Manter arquivo WAV após conversão")
+    parser = argparse.ArgumentParser(description="Conveter the MP3 to txt with Whisper")
+    parser.add_argument(action="--input", required=True, help="Caminho do arquivo de entrada (MP3/WAV)")
+    parser.add_argument(action="--output", default="transcricao.txt", help="Arquivo de saída para transcrição")
+    parser.add_argument(action="--model", default="large-v3", help="Modelo Whisper (tiny, base, small, medium, large-v3)")
+    parser.add_argument(action="--device-handler", default="cpu", choices=["cpu", "cuda"], help="Dispositivo de processamento")
+    parser.add_argument("--keep-wav", action="store_true", help="Manter arquivo WAV após conversão")
     
     args = parser.parse_args()
 
