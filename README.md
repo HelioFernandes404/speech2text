@@ -15,4 +15,4 @@ This project create with objetive the smooth conveter audio in txt ( currrenty, 
 git@github.com:HelioFernandes404/speech2text.git
 cd speech2text
 pip install -r requirements
-``` 
+```
