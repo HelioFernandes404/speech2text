@@ -16,3 +16,28 @@ git@github.com:HelioFernandes404/speech2text.git
 cd speech2text
 pip install -r requirements
 ```
+
+## 🧪 Usege
+```bash
+python3 script.py --entrada audio.mp3
+```
+
+## Project Strcture 
+```bash
+.
+├── README.md
+├── requirements.txt
+├── script.py
+└── tx
+2 directories, 3 files
+```
+
+## Configuration
+- none
+
+## Maintenance
+- How to clean, rebuild, reconfigure.
+
+# Notes
+- none
+
