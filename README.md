@@ -19,7 +19,7 @@ pip install -r requirements
 
 ## 🧪 Usege
 ```bash
-python3 script.py --entrada audio.mp3
+python3 script.py --input audio.mp3
 ```
 
 ## Project Strcture 
