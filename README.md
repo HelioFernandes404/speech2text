@@ -38,6 +38,6 @@ python3 script.py --input audio.mp3
 ## Maintenance
 - How to clean, rebuild, reconfigure.
 
-# Notes
+## Notes
 - none
 
