@@ -1,6 +1,6 @@
 # Archicture Decicions ( Light ADR Style )
 
-## Decicions Log
+## Decisions Log
 
 ## [2025/07/08] Use README.md to better compression
 - make readme.md to better compression 
