@@ -5,3 +5,6 @@ venv/
 # Ignore all .txt files
 *.txt
 *.ogg
+
+# Ignore llm files
+CLAUDE.md
