@@ -4,7 +4,7 @@ import argparse
 import whisper
 import torch
 
-def converter_mp3_para_wav(input_mp3: str, output_wav: str) -> bool:
+def converter_mp3_to_wav(input_mp3: str, output_wav: str) -> bool:
     """Converte arquivo MP3 para WAV com configurações otimizadas para transcrição"""
     try:
         if not os.path.exists(input_mp3):
@@ -35,7 +35,7 @@ def converter_mp3_para_wav(input_mp3: str, output_wav: str) -> bool:
     
     return False
 
-def verificar_audio(wav_path: str) -> bool:
+def verify_audio(wav_path: str) -> bool:
     """Verifica as propriedades do arquivo WAV gerado"""
     try:
         print("\n🔍 Verificando arquivo WAV...")
@@ -53,7 +53,7 @@ def verificar_audio(wav_path: str) -> bool:
         print(f"Erro na verificação: {str(e)}")
         return False
 
-def transcrever_audio(audio_path: str, modelo: str = "large-v3", device: str = "cpu") -> str:
+def transcribe_audio(audio_path: str, modelo: str = "large-v3", device: str = "cpu") -> str:
     """Transcreve áudio para texto usando Whisper com máxima precisão"""
     try:
         if device == "cuda" and not torch.cuda.is_available():
@@ -63,7 +63,7 @@ def transcrever_audio(audio_path: str, modelo: str = "large-v3", device: str = "
         print(f"🚀 Carregando modelo {modelo} ({device.upper()})...")
         model = whisper.load_model(modelo, device=device)
 
-        print(f"\n🔊 Iniciando transcrição...")
+        print("\n🔊 Iniciando transcrição...")
         resultado = model.transcribe(
             audio_path,
             language="pt",
@@ -83,22 +83,22 @@ def transcrever_audio(audio_path: str, modelo: str = "large-v3", device: str = "
 def processar_entrada(args):
     """Fluxo principal de processamento de áudio"""
     # Verificar arquivo de entrada
-    if not os.path.exists(args.entrada):
-        raise FileNotFoundError(f"Arquivo {args.entrada} não encontrado!")
+    if not os.path.exists(args.input):
+        raise FileNotFoundError(f"Arquivo {args.input} não encontrado!")
 
-    caminho_audio = args.entrada
+    path_audio = args.input
     wav_temp = None
 
     # Converter MP3 para WAV se necessário
-    if args.entrada.lower().endswith('.mp3'):
-        wav_temp = os.path.splitext(args.entrada)[0] + ".wav"
-        if not converter_mp3_para_wav(args.entrada, wav_temp):
+    if args.input.lower().endswith('.mp3'):
+        wav_temp = os.path.splitext(args.input)[0] + ".wav"
+        if not converter_mp3_to_wav(args.input, wav_temp):
             raise RuntimeError("Falha na conversão MP3 para WAV")
-        verificar_audio(wav_temp)
-        caminho_audio = wav_temp
+        verify_audio(wav_temp)
+        path_audio = wav_temp
 
     # Transcrever áudio
-    texto = transcrever_audio(caminho_audio, args.modelo, args.dispositivo)
+    texto = transcribe_audio(path_audio, args.modelo, args.dispositivo)
 
     # Salvar transcrição
     with open(args.saida, 'w', encoding='utf-8') as f:
