@@ -3,7 +3,7 @@ from src.processor import processar_entrada
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Convert MP3 to txt with Whisper")
+    parser = argparse.ArgumentParser(description="Convert MP3 to text with Whisper")
     parser.add_argument("--input", required=True, help="Caminho do arquivo de entrada (MP3/WAV)")
     parser.add_argument("--output", dest="saida", default="transcricao.txt", help="Arquivo de saída para transcrição")
     parser.add_argument("--model", dest="modelo", default="large-v3", help="Modelo Whisper (tiny, base, small, medium, large-v3)")
