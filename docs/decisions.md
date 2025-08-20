@@ -11,3 +11,6 @@
 - research available libraries and APIs for TTS integration.
 - evaluate the impact on app implementation structure.
 - create a prototype to test TTS functionality.
+
+## 2025/08/20 Refactor this is Project for en-us
+- improve ....
