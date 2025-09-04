@@ -1,22 +1,22 @@
 import argparse
-from src.processor import processar_entrada
+from src.processor import process_input
 
 
 def main():
     parser = argparse.ArgumentParser(description="Convert MP3 to text with Whisper")
-    parser.add_argument("--input", required=True, help="Caminho do arquivo de entrada (MP3/WAV)")
-    parser.add_argument("--output", dest="saida", default="transcricao.txt", help="Arquivo de saída para transcrição")
-    parser.add_argument("--model", dest="modelo", default="large-v3", help="Modelo Whisper (tiny, base, small, medium, large-v3)")
-    parser.add_argument("--device", dest="dispositivo", default="cpu", choices=["cpu", "cuda"], help="Dispositivo de processamento")
-    parser.add_argument("--keep-wav", dest="manter_wav", action="store_true", help="Manter arquivo WAV após conversão")
+    parser.add_argument("--input", required=True, help="Input file path (MP3/WAV)")
+    parser.add_argument("--output", dest="output", default="transcription.txt", help="Output file for transcription")
+    parser.add_argument("--model", dest="model", default="large-v3", help="Whisper model (tiny, base, small, medium, large-v3)")
+    parser.add_argument("--device", dest="device", default="cpu", choices=["cpu", "cuda"], help="Processing device")
+    parser.add_argument("--keep-wav", dest="keep_wav", action="store_true", help="Keep WAV file after conversion")
     
     args = parser.parse_args()
 
     try:
-        processar_entrada(args)
-        print(f"\n✅ Transcrição finalizada! Resultado salvo em: {args.saida}")
+        process_input(args)
+        print(f"\n✅ Transcription completed! Result saved to: {args.output}")
     except Exception as e:
-        print(f"\n❌ Falha no processamento: {str(e)}")
+        print(f"\n❌ Processing failed: {str(e)}")
         exit(1)
         
 

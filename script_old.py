@@ -5,13 +5,13 @@ import whisper
 import torch
 
 def converter_mp3_to_wav(input_mp3: str, output_wav: str) -> bool:
-    """Converte arquivo MP3 para WAV com configurações otimizadas para transcrição"""
+    """Converts MP3 file to WAV with optimized settings for transcription"""
     try:
         if not os.path.exists(input_mp3):
-            print(f"❌ Arquivo {input_mp3} não encontrado!")
+            print(f"❌ File {input_mp3} not found!")
             return False
 
-        print("⏳ Convertendo MP3 para WAV...")
+        print("⏳ Converting MP3 to WAV...")
         
         cmd = [
             'ffmpeg',
@@ -25,20 +25,20 @@ def converter_mp3_to_wav(input_mp3: str, output_wav: str) -> bool:
         ]
         
         subprocess.run(cmd, check=True, capture_output=True, text=True)
-        print(f"✅ Conversão concluída: {output_wav} (16kHz, mono, 16-bit)")
+        print(f"✅ Conversion completed: {output_wav} (16kHz, mono, 16-bit)")
         return True
         
     except subprocess.CalledProcessError as e:
-        print(f"❌ Erro na conversão:\n{e.stderr}")
+        print(f"❌ Error in conversion:\n{e.stderr}")
     except Exception as e:
-        print(f"❌ Erro inesperado: {str(e)}")
+        print(f"❌ Unexpected error: {str(e)}")
     
     return False
 
 def verify_audio(wav_path: str) -> bool:
-    """Verifica as propriedades do arquivo WAV gerado"""
+    """Verifies the properties of the generated WAV file"""
     try:
-        print("\n🔍 Verificando arquivo WAV...")
+        print("\n🔍 Verifying WAV file...")
         cmd = [
             'ffprobe',
             '-v', 'error',
@@ -50,83 +50,83 @@ def verify_audio(wav_path: str) -> bool:
         print(resultado.stdout)
         return True
     except Exception as e:
-        print(f"Erro na verificação: {str(e)}")
+        print(f"Error in verification: {str(e)}")
         return False
 
-def transcribe_audio(audio_path: str, modelo: str = "large-v3", device: str = "cpu") -> str:
-    """Transcreve áudio para texto usando Whisper com máxima precisão"""
+def transcribe_audio(audio_path: str, model: str = "large-v3", device: str = "cpu") -> str:
+    """Transcribes audio to text using Whisper with maximum precision"""
     try:
         if device == "cuda" and not torch.cuda.is_available():
-            print("⚠️ CUDA não disponível. Usando CPU.")
+            print("⚠️ CUDA not available. Using CPU.")
             device = "cpu"
 
-        print(f"🚀 Carregando modelo {modelo} ({device.upper()})...")
-        model = whisper.load_model(modelo, device=device)
+        print(f"🚀 Loading model {model} ({device.upper()})...")
+        model = whisper.load_model(model, device=device)
 
-        print("\n🔊 Iniciando transcrição...")
+        print("\n🔊 Starting transcription...")
         resultado = model.transcribe(
             audio_path,
-            language="pt",
+            language="en",
             verbose=True,
             temperature=0.0,
             beam_size=5,
             best_of=5,
             compression_ratio_threshold=2.4,
             no_speech_threshold=0.6,
-            initial_prompt="Transcrição de alta precisão com Whisper large-v3."
+            initial_prompt="High precision transcription with Whisper large-v3."
         )
         
         return resultado["text"]
     except Exception as e:
-        raise RuntimeError(f"Erro na transcrição: {str(e)}")
+        raise RuntimeError(f"Error in transcription: {str(e)}")
 
-def processar_entrada(args):
-    """Fluxo principal de processamento de áudio"""
-    # Verificar arquivo de entrada
+def process_input(args):
+    """Main audio processing workflow"""
+    # Verify input file
     if not os.path.exists(args.input):
-        raise FileNotFoundError(f"Arquivo {args.input} não encontrado!")
+        raise FileNotFoundError(f"File {args.input} not found!")
 
     path_audio = args.input
     wav_temp = None
 
-    # Converter MP3 para WAV se necessário
+    # Convert MP3 to WAV if necessary
     if args.input.lower().endswith('.mp3'):
         wav_temp = os.path.splitext(args.input)[0] + ".wav"
         if not converter_mp3_to_wav(args.input, wav_temp):
-            raise RuntimeError("Falha na conversão MP3 para WAV")
+            raise RuntimeError("Failed to convert MP3 to WAV")
         verify_audio(wav_temp)
         path_audio = wav_temp
 
-    # Transcrever áudio
-    texto = transcribe_audio(path_audio, args.modelo, args.dispositivo)
+    # Transcribe audio
+    text = transcribe_audio(path_audio, args.model, args.device)
 
-    # Salvar transcrição
-    with open(args.saida, 'w', encoding='utf-8') as f:
-        f.write(texto)
+    # Save transcription
+    with open(args.output, 'w', encoding='utf-8') as f:
+        f.write(text)
 
-    # Limpar arquivo temporário
-    if wav_temp and not args.manter_wav:
+    # Clean temporary file
+    if wav_temp and not args.keep_wav:
         try:
             os.remove(wav_temp)
-            print(f"🗑️ Arquivo temporário {wav_temp} removido")
+            print(f"🗑️ Temporary file {wav_temp} removed")
         except Exception as e:
-            print(f"⚠️ Erro ao remover arquivo temporário: {str(e)}")
+            print(f"⚠️ Error removing temporary file: {str(e)}")
 
 def main():
     parser = argparse.ArgumentParser(description="Convert MP3 to txt with Whisper")
-    parser.add_argument("--input", dest="entrada", required=True, help="Caminho do arquivo de entrada (MP3/WAV)")
-    parser.add_argument("--output", dest="saida", default="transcricao.txt", help="Arquivo de saída para transcrição")
-    parser.add_argument("--model", dest="modelo", default="large-v3", help="Modelo Whisper (tiny, base, small, medium, large-v3)")
-    parser.add_argument("--device", dest="dispositivo", default="cpu", choices=["cpu", "cuda"], help="Dispositivo de processamento")
-    parser.add_argument("--keep-wav", dest="manter_wav", action="store_true", help="Manter arquivo WAV após conversão")
+    parser.add_argument("--input", dest="input", required=True, help="Input file path (MP3/WAV)")
+    parser.add_argument("--output", dest="output", default="transcription.txt", help="Output file for transcription")
+    parser.add_argument("--model", dest="model", default="large-v3", help="Whisper model (tiny, base, small, medium, large-v3)")
+    parser.add_argument("--device", dest="device", default="cpu", choices=["cpu", "cuda"], help="Processing device")
+    parser.add_argument("--keep-wav", dest="keep_wav", action="store_true", help="Keep WAV file after conversion")
     
     args = parser.parse_args()
 
     try:
-        processar_entrada(args)
-        print(f"\n✅ Transcrição finalizada! Resultado salvo em: {args.saida}")
+        process_input(args)
+        print(f"\n✅ Transcription completed! Result saved to: {args.output}")
     except Exception as e:
-        print(f"\n❌ Falha no processamento: {str(e)}")
+        print(f"\n❌ Processing failed: {str(e)}")
         exit(1)
         
 if __name__ == "__main__":

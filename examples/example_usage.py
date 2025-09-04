@@ -23,7 +23,7 @@ def example_basic_usage():
         verify_audio(wav_file)
         
         # Transcribe audio
-        text = transcribe_audio(wav_file, modelo="base", device="cpu")
+        text = transcribe_audio(wav_file, model="base", device="cpu")
         
         # Save transcription
         with open("transcription.txt", "w", encoding="utf-8") as f:

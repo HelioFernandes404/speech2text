@@ -2,13 +2,13 @@ import os
 import subprocess
 
 def converter_mp3_to_wav(input_mp3: str, output_wav: str) -> bool:
-    """Convert file MP3 to WAV with configuration otimized for transcription"""
+    """Converts MP3 file to WAV with optimized configuration for transcription"""
     try:
         if not os.path.exists(input_mp3):
             print(f"❌ File {input_mp3} not found!")
             return False
 
-        print("⏳ converting MP3 to WAV...")
+        print("⏳ Converting MP3 to WAV...")
         
         cmd = [
             'ffmpeg',
@@ -26,9 +26,9 @@ def converter_mp3_to_wav(input_mp3: str, output_wav: str) -> bool:
         return True
         
     except subprocess.CalledProcessError as e:
-        print(f"❌ Erro on Conversion:\n{e.stderr}")
+        print(f"❌ Error in conversion:\n{e.stderr}")
     except Exception as e:
-        print(f"❌ Erro Unexpected: {str(e)}")
+        print(f"❌ Unexpected error: {str(e)}")
     
     return False
 
@@ -36,7 +36,7 @@ def converter_mp3_to_wav(input_mp3: str, output_wav: str) -> bool:
 def verify_audio(wav_path: str) -> bool:
     """Verify the properties of the generated WAV file"""
     try:
-        print("\n🔍 Checking WAV FILE...")
+        print("\n🔍 Verifying WAV file...")
         cmd = [
             'ffprobe',
             '-v', 'error',

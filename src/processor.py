@@ -4,39 +4,33 @@ from .audio_converter import converter_mp3_to_wav, verify_audio
 from .transcriber import transcribe_audio
 
 
-def processar_entrada(args):
-    """Fluxo principal de processamento de áudio"""
-    """Flow the main process the audio"""
-    # Verificar arquivo de entrada
-    # Verifcy files the input
+def process_input(args):
+    """Main audio processing workflow"""
+    # Verify input file
     if not os.path.exists(args.input):
         raise FileNotFoundError(f"File {args.input} not found!")
 
     path_audio = args.input
     wav_temp = None
 
-    # Converter MP3 para WAV se necessário
-    # Converte the MP3 to WAV if necessrion
+    # Convert MP3 to WAV if necessary
     if args.input.lower().endswith(".mp3"):
         wav_temp = os.path.splitext(args.input)[0] + ".wav"
         if not converter_mp3_to_wav(args.input, wav_temp):
-            raise RuntimeError("Fail on conversion MP3 to WAV")
+            raise RuntimeError("Failed to convert MP3 to WAV")
         verify_audio(wav_temp)
         path_audio = wav_temp
-    # TODO: traduzir for en-us
-    # Transcrever áudio
-    texto = transcribe_audio(path_audio, args.modelo, args.dispositivo)
+    # Transcribe audio
+    text = transcribe_audio(path_audio, args.model, args.device)
 
-    # Salvar transcrição
-    # Save transcriber
-    with open(args.saida, "w", encoding="utf-8") as f:
-        f.write(texto)
+    # Save transcription
+    with open(args.output, "w", encoding="utf-8") as f:
+        f.write(text)
 
-    # Limpar arquivo temporário
-    # Clear temp files
-    if wav_temp and not args.manter_wav:
+    # Clean temporary file
+    if wav_temp and not args.keep_wav:
         try:
             os.remove(wav_temp)
-            print(f"🗑️ Temp files {wav_temp} removed")
+            print(f"🗑️ Temporary file {wav_temp} removed")
         except Exception as e:
-            print(f"⚠️ Error at remove temp files: {str(e)}")
+            print(f"⚠️ Error removing temporary file: {str(e)}")
