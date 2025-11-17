@@ -36,6 +36,10 @@ def converter_mp3_to_wav(input_mp3: str, output_wav: str) -> bool:
 def verify_audio(wav_path: str) -> bool:
     """Verify the properties of the generated WAV file"""
     try:
+        if not os.path.exists(wav_path):
+            print(f"❌ WAV file not found: {wav_path}")
+            return False
+
         print("\n🔍 Verifying WAV file...")
         cmd = [
             'ffprobe',
@@ -44,9 +48,12 @@ def verify_audio(wav_path: str) -> bool:
             '-of', 'default=noprint_wrappers=1',
             wav_path
         ]
-        resultado = subprocess.run(cmd, capture_output=True, text=True)
+        resultado = subprocess.run(cmd, capture_output=True, text=True, check=True)
         print(resultado.stdout)
         return True
+    except subprocess.CalledProcessError as e:
+        print(f"❌ Error verifying audio: {e.stderr}")
+        return False
     except Exception as e:
-        print(f"Error during checking: {str(e)}")
+        print(f"❌ Error during checking: {str(e)}")
         return False
