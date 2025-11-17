@@ -21,7 +21,7 @@ def process_input(args):
         verify_audio(wav_temp)
         path_audio = wav_temp
     # Transcribe audio
-    text = transcribe_audio(path_audio, args.model, args.device)
+    text = transcribe_audio(path_audio, args.model, args.device, args.compute_type)
 
     # Save transcription
     with open(args.output, "w", encoding="utf-8") as f:
