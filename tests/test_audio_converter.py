@@ -5,30 +5,30 @@ from src.audio_converter import converter_mp3_to_wav, verify_audio
 
 
 class TestAudioConverter(unittest.TestCase):
-    """Testes para o módulo de conversão de áudio"""
+    """Tests for audio conversion module"""
 
     def setUp(self):
-        """Configuração antes de cada teste"""
+        """Setup before each test"""
         self.temp_dir = tempfile.mkdtemp()
 
     def tearDown(self):
-        """Limpeza após cada teste"""
-        # Limpar arquivos temporários
+        """Cleanup after each test"""
+        # Clean temporary files
         import shutil
         if os.path.exists(self.temp_dir):
             shutil.rmtree(self.temp_dir)
 
-    def test_converter_arquivo_inexistente(self):
-        """Testa conversão com arquivo que não existe"""
-        input_file = os.path.join(self.temp_dir, "nao_existe.mp3")
+    def test_converter_nonexistent_file(self):
+        """Test conversion with non-existent file"""
+        input_file = os.path.join(self.temp_dir, "nonexistent.mp3")
         output_file = os.path.join(self.temp_dir, "output.wav")
 
         result = converter_mp3_to_wav(input_file, output_file)
         self.assertFalse(result)
 
-    def test_verify_audio_arquivo_inexistente(self):
-        """Testa verificação com arquivo que não existe"""
-        wav_file = os.path.join(self.temp_dir, "nao_existe.wav")
+    def test_verify_audio_nonexistent_file(self):
+        """Test verification with non-existent file"""
+        wav_file = os.path.join(self.temp_dir, "nonexistent.wav")
 
         result = verify_audio(wav_file)
         self.assertFalse(result)

@@ -1,10 +1,24 @@
 # TODO: double check on en-us
 import os
+from typing import Protocol
+
 from .audio_converter import converter_mp3_to_wav, verify_audio
-from .transcriber import transcribe_audio
+from .transcriber import transcribe_audio, ModelSize, DeviceType, ComputeType
+from .logger import logger
 
 
-def process_input(args):
+class ProcessArgs(Protocol):
+    """Protocol for process_input arguments"""
+
+    input: str
+    output: str
+    model: ModelSize
+    device: DeviceType
+    compute_type: ComputeType
+    keep_wav: bool
+
+
+def process_input(args: ProcessArgs) -> None:
     """Main audio processing workflow"""
     # Verify input file
     if not os.path.exists(args.input):
@@ -31,6 +45,6 @@ def process_input(args):
     if wav_temp and not args.keep_wav:
         try:
             os.remove(wav_temp)
-            print(f"🗑️ Temporary file {wav_temp} removed")
+            logger.info(f"Temporary file {wav_temp} removed")
         except Exception as e:
-            print(f"⚠️ Error removing temporary file: {str(e)}")
+            logger.warning(f"Error removing temporary file: {str(e)}")

@@ -2,12 +2,41 @@
 venv/
 .venv/
 
-# Ignore all .txt files
-*.txt
+# Ignore output text files (but keep requirements files)
 *.ogg
+*.wav
+output*.txt
+transcription*.txt
+!requirements*.txt
 
 # Ignore llm files
 CLAUDE.md
 
+# Logs
+logs/
+*.log
+
 # Ignore cache files
 __pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Coverage reports
+.coverage
+htmlcov/
+coverage.xml
+
+# Build artifacts
+dist/
+build/
+*.egg-info/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo

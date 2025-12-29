@@ -16,10 +16,33 @@ High-performance audio transcription using faster-whisper (up to 4x faster than 
 
 ## Installation
 
+### Using uv (recommended)
 ```bash
-git@github.com:HelioFernandes404/speech2text.git
+git clone git@github.com:HelioFernandes404/speech2text.git
 cd speech2text
-pip install -r requirements
+
+# Install uv if not already installed
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Create virtual environment and install dependencies
+uv venv
+uv pip install -e ".[dev]"
+```
+
+### Using pip
+```bash
+git clone git@github.com:HelioFernandes404/speech2text.git
+cd speech2text
+pip install -r requirements.txt
+
+# For development
+pip install -r requirements-dev.txt
+```
+
+### System dependencies
+```bash
+# Ubuntu/Debian
+sudo apt-get install ffmpeg portaudio19-dev
 ```
 
 ## Usage
@@ -56,22 +79,51 @@ python main.py --input audio.mp3 --device cuda --compute-type float16
 --keep-wav      # Keep WAV file after conversion
 ```
 
-### 3. Complete Workflow
+### 3. Automated Workflow (Record + Transcribe)
 
 ```bash
-# Record + Transcribe in one go
+# Automatic: record system audio and transcribe
+python start.py --duration 30 --model large-v3
+
+# With custom output directory
+python start.py --duration 60 --output-dir ./recordings --keep-audio
+
+# Options
+--duration      # Recording duration in seconds (default: 30)
+--model         # Whisper model (default: large-v3)
+--device        # cpu or cuda (default: cpu)
+--compute-type  # int8, float16, etc. (default: int8)
+--keep-audio    # Keep audio file after transcription
+--output-dir    # Output directory (default: output/)
+```
+
+### 4. Manual Workflow
+
+```bash
+# Record + Transcribe step by step
 python record.py --mode system --duration 30 --output meeting.wav
 python main.py --input meeting.wav --output meeting.txt
 ```
 
-## Project Strcture 
+## Project Structure
 ```bash
 .
-├── README.md
-├── requirements.txt
-├── script.py
-└── tx
-2 directories, 3 files
+├── src/
+│   ├── audio_converter.py    # MP3→WAV conversion
+│   ├── audio_recorder.py     # System/microphone recording
+│   ├── processor.py          # Main workflow orchestration
+│   ├── transcriber.py        # Faster-whisper integration
+│   └── logger.py             # Structured logging (loguru)
+├── tests/
+│   ├── test_audio_converter.py
+│   └── test_audio_recorder.py
+├── main.py                   # CLI for transcription
+├── record.py                 # CLI for audio recording
+├── start.py                  # Automated workflow (record + transcribe)
+├── requirements.txt          # Production dependencies
+├── requirements-dev.txt      # Development dependencies
+├── pyproject.toml            # Modern Python project configuration
+└── README.md
 ```
 
 ## Performance Tips
@@ -85,4 +137,46 @@ python main.py --input meeting.wav --output meeting.txt
 - **If recording fails**: Run `python record.py --list-devices` to find monitor device
 - **Monitor device**: Usually has "monitor" or "loopback" in the name
 - **Sample rate**: 16kHz is optimal for Whisper (smaller files, same accuracy)
+
+## Development
+
+### Running tests
+```bash
+# Run all tests
+uv run pytest
+
+# Run with coverage
+uv run pytest --cov=src --cov-report=html
+
+# Run specific test file
+uv run pytest tests/test_audio_converter.py
+```
+
+### Code quality
+```bash
+# Lint with ruff
+uv run ruff check .
+
+# Format code
+uv run ruff format .
+
+# Type checking with mypy
+uv run mypy src/
+```
+
+### CI/CD
+The project includes GitHub Actions workflows that automatically:
+- ✅ Run linting and formatting checks
+- ✅ Execute type checking with mypy
+- ✅ Run tests across Python 3.10, 3.11, 3.12
+- ✅ Generate coverage reports
+
+## Recent Improvements
+- ✨ Migrated to modern `pyproject.toml` configuration
+- 🔧 Added comprehensive type hints with `typing` module
+- 📊 Implemented structured logging with loguru
+- 🧪 Improved test coverage with mocks
+- 🌍 Standardized codebase to 100% English
+- ⚡ Added CI/CD with GitHub Actions
+- 📦 Support for `uv` package manager
 

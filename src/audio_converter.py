@@ -1,15 +1,18 @@
 import os
 import subprocess
 
+from .logger import logger
+
+
 def converter_mp3_to_wav(input_mp3: str, output_wav: str) -> bool:
     """Converts MP3 file to WAV with optimized configuration for transcription"""
     try:
         if not os.path.exists(input_mp3):
-            print(f"❌ File {input_mp3} not found!")
+            logger.error(f"File {input_mp3} not found!")
             return False
 
-        print("⏳ Converting MP3 to WAV...")
-        
+        logger.info("Converting MP3 to WAV...")
+
         cmd = [
             'ffmpeg',
             '-i', input_mp3,
@@ -20,16 +23,16 @@ def converter_mp3_to_wav(input_mp3: str, output_wav: str) -> bool:
             '-y',
             output_wav
         ]
-        
+
         subprocess.run(cmd, check=True, capture_output=True, text=True)
-        print(f"✅ Conversion completed: {output_wav} (16kHz, mono, 16-bit)")
+        logger.success(f"Conversion completed: {output_wav} (16kHz, mono, 16-bit)")
         return True
-        
+
     except subprocess.CalledProcessError as e:
-        print(f"❌ Error in conversion:\n{e.stderr}")
+        logger.error(f"Error in conversion:\n{e.stderr}")
     except Exception as e:
-        print(f"❌ Unexpected error: {str(e)}")
-    
+        logger.error(f"Unexpected error: {str(e)}")
+
     return False
 
 
@@ -37,10 +40,10 @@ def verify_audio(wav_path: str) -> bool:
     """Verify the properties of the generated WAV file"""
     try:
         if not os.path.exists(wav_path):
-            print(f"❌ WAV file not found: {wav_path}")
+            logger.error(f"WAV file not found: {wav_path}")
             return False
 
-        print("\n🔍 Verifying WAV file...")
+        logger.info("Verifying WAV file...")
         cmd = [
             'ffprobe',
             '-v', 'error',
@@ -49,11 +52,11 @@ def verify_audio(wav_path: str) -> bool:
             wav_path
         ]
         resultado = subprocess.run(cmd, capture_output=True, text=True, check=True)
-        print(resultado.stdout)
+        logger.debug(resultado.stdout)
         return True
     except subprocess.CalledProcessError as e:
-        print(f"❌ Error verifying audio: {e.stderr}")
+        logger.error(f"Error verifying audio: {e.stderr}")
         return False
     except Exception as e:
-        print(f"❌ Error during checking: {str(e)}")
+        logger.error(f"Error during checking: {str(e)}")
         return False

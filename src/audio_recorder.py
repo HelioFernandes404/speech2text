@@ -1,19 +1,22 @@
+from typing import Optional, Tuple, List, Any
+
 import sounddevice as sd
 import soundfile as sf
 import numpy as np
 from datetime import datetime
+from .logger import logger
 
 
-def list_audio_devices():
+def list_audio_devices() -> List[Any]:
     """List all available audio devices"""
-    print("\n🎤 Available audio devices:")
+    logger.info("Available audio devices:")
     devices = sd.query_devices()
     for i, device in enumerate(devices):
-        print(f"  [{i}] {device['name']} (in: {device['max_input_channels']}, out: {device['max_output_channels']})")
+        logger.info(f"  [{i}] {device['name']} (in: {device['max_input_channels']}, out: {device['max_output_channels']})")
     return devices
 
 
-def find_monitor_device():
+def find_monitor_device() -> Tuple[int, str]:
     """Find PulseAudio/PipeWire monitor device for system audio capture"""
     devices = sd.query_devices()
 
@@ -28,7 +31,12 @@ def find_monitor_device():
     return default_input['index'], default_input['name']
 
 
-def record_system_audio(output_file: str, duration: int = 10, sample_rate: int = 16000, device: int = None) -> bool:
+def record_system_audio(
+    output_file: str,
+    duration: int = 10,
+    sample_rate: int = 16000,
+    device: Optional[int] = None,
+) -> bool:
     """Record system audio output (what's playing on your computer)
 
     Args:
@@ -43,13 +51,13 @@ def record_system_audio(output_file: str, duration: int = 10, sample_rate: int =
     try:
         if device is None:
             device, device_name = find_monitor_device()
-            print(f"🎧 Auto-detected device: {device_name}")
+            logger.info(f"Auto-detected device: {device_name}")
         else:
             device_name = sd.query_devices(device)['name']
-            print(f"🎧 Using device: {device_name}")
+            logger.info(f"Using device: {device_name}")
 
-        print(f"\n🔴 Recording system audio for {duration} seconds...")
-        print(f"📊 Sample rate: {sample_rate}Hz")
+        logger.info(f"Recording system audio for {duration} seconds...")
+        logger.debug(f"Sample rate: {sample_rate}Hz")
 
         # Record audio
         recording = sd.rec(
@@ -65,12 +73,12 @@ def record_system_audio(output_file: str, duration: int = 10, sample_rate: int =
         # Save to file
         sf.write(output_file, recording, sample_rate)
 
-        print(f"✅ Recording saved: {output_file}")
+        logger.success(f"Recording saved: {output_file}")
         return True
 
     except Exception as e:
-        print(f"❌ Recording failed: {str(e)}")
-        print("\n💡 Tip: Try listing devices with --list-devices to find the correct monitor device")
+        logger.error(f"Recording failed: {str(e)}")
+        logger.info("Tip: Try listing devices with --list-devices to find the correct monitor device")
         return False
 
 
@@ -86,8 +94,8 @@ def record_microphone(output_file: str, duration: int = 10, sample_rate: int = 1
         True if recording successful, False otherwise
     """
     try:
-        print(f"\n🎤 Recording from microphone for {duration} seconds...")
-        print(f"📊 Sample rate: {sample_rate}Hz")
+        logger.info(f"Recording from microphone for {duration} seconds...")
+        logger.debug(f"Sample rate: {sample_rate}Hz")
 
         # Use default input device
         recording = sd.rec(
@@ -101,9 +109,9 @@ def record_microphone(output_file: str, duration: int = 10, sample_rate: int = 1
 
         sf.write(output_file, recording, sample_rate)
 
-        print(f"✅ Recording saved: {output_file}")
+        logger.success(f"Recording saved: {output_file}")
         return True
 
     except Exception as e:
-        print(f"❌ Recording failed: {str(e)}")
+        logger.error(f"Recording failed: {str(e)}")
         return False

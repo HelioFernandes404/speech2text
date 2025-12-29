@@ -1,10 +1,12 @@
 import argparse
+from typing import Optional
 from src.audio_recorder import record_system_audio, record_microphone, list_audio_devices
+from src.logger import logger
 from datetime import datetime
 import os
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(description="Record system audio or microphone")
 
     parser.add_argument("--mode", dest="mode", default="system",
@@ -60,18 +62,18 @@ def main():
             )
 
         if success:
-            print(f"\n✅ Recording completed successfully!")
-            print(f"📁 File: {args.output}")
-            print(f"\n💡 Transcribe it with:")
-            print(f"   python main.py --input {args.output}")
+            logger.success("Recording completed successfully!")
+            logger.info(f"File: {args.output}")
+            logger.info("Transcribe it with:")
+            logger.info(f"   python main.py --input {args.output}")
         else:
             exit(1)
 
     except KeyboardInterrupt:
-        print("\n\n⚠️ Recording interrupted by user")
+        logger.warning("Recording interrupted by user")
         exit(1)
     except Exception as e:
-        print(f"\n❌ Error: {str(e)}")
+        logger.error(f"Error: {str(e)}")
         exit(1)
 
 

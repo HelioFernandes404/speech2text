@@ -1,8 +1,9 @@
 import argparse
 from src.processor import process_input
+from src.logger import logger
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(description="Convert MP3 to text with faster-whisper")
     parser.add_argument("--input", required=True, help="Input file path (MP3/WAV)")
     parser.add_argument("--output", dest="output", default="transcription.txt", help="Output file for transcription")
@@ -17,9 +18,9 @@ def main():
 
     try:
         process_input(args)
-        print(f"\n✅ Transcription completed! Result saved to: {args.output}")
+        logger.success(f"Transcription completed! Result saved to: {args.output}")
     except Exception as e:
-        print(f"\n❌ Processing failed: {str(e)}")
+        logger.error(f"Processing failed: {str(e)}")
         exit(1)
         
 

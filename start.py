@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Script automatizado: grava áudio do sistema e transcreve automaticamente
-Uso: python start.py [--duration SEGUNDOS]
+Automated script: record system audio and transcribe automatically
+Usage: python start.py [--duration SECONDS]
 """
 import argparse
 import os
@@ -9,11 +9,22 @@ import sys
 from datetime import datetime
 from src.audio_recorder import record_system_audio
 from src.processor import process_input
+from src.transcriber import ModelSize, DeviceType, ComputeType
+from src.logger import logger
 
 
 class Args:
-    """Classe auxiliar para argumentos"""
-    def __init__(self, input_file, output_file, model, device, compute_type, keep_wav):
+    """Helper class for arguments"""
+
+    def __init__(
+        self,
+        input_file: str,
+        output_file: str,
+        model: ModelSize,
+        device: DeviceType,
+        compute_type: ComputeType,
+        keep_wav: bool,
+    ) -> None:
         self.input = input_file
         self.output = output_file
         self.model = model
@@ -22,53 +33,53 @@ class Args:
         self.keep_wav = keep_wav
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(
-        description="🎙️ Gravação e transcrição automática de áudio do sistema"
+        description="Automatic system audio recording and transcription"
     )
 
     parser.add_argument("--duration", "-d", type=int, default=30,
-                        help="Duração da gravação em segundos (padrão: 30)")
+                        help="Recording duration in seconds (default: 30)")
 
     parser.add_argument("--model", "-m", default="large-v3",
                         choices=["tiny", "base", "small", "medium", "large-v3"],
-                        help="Modelo Whisper (padrão: large-v3)")
+                        help="Whisper model (default: large-v3)")
 
     parser.add_argument("--device", default="cpu",
                         choices=["cpu", "cuda"],
-                        help="Dispositivo de processamento (padrão: cpu)")
+                        help="Processing device (default: cpu)")
 
     parser.add_argument("--compute-type", default="int8",
                         choices=["int8", "int8_float16", "float16", "float32"],
-                        help="Tipo de quantização (padrão: int8)")
+                        help="Quantization type (default: int8)")
 
     parser.add_argument("--keep-audio", action="store_true",
-                        help="Manter arquivo de áudio após transcrição")
+                        help="Keep audio file after transcription")
 
     parser.add_argument("--output-dir", default="output",
-                        help="Diretório para salvar arquivos (padrão: output/)")
+                        help="Directory to save files (default: output/)")
 
     args = parser.parse_args()
 
-    # Criar diretório de output se não existir
+    # Create output directory if it doesn't exist
     os.makedirs(args.output_dir, exist_ok=True)
 
-    # Gerar nomes de arquivos com timestamp
+    # Generate filenames with timestamp
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     audio_file = os.path.join(args.output_dir, f"audio_{timestamp}.wav")
-    text_file = os.path.join(args.output_dir, f"transcricao_{timestamp}.txt")
+    text_file = os.path.join(args.output_dir, f"transcription_{timestamp}.txt")
 
-    print("=" * 60)
-    print("🎙️  GRAVAÇÃO E TRANSCRIÇÃO AUTOMÁTICA")
-    print("=" * 60)
-    print(f"⏱️  Duração: {args.duration} segundos")
-    print(f"🤖 Modelo: {args.model}")
-    print(f"💾 Salvando em: {args.output_dir}/")
-    print("=" * 60)
+    logger.info("=" * 60)
+    logger.info("AUTOMATIC RECORDING AND TRANSCRIPTION")
+    logger.info("=" * 60)
+    logger.info(f"Duration: {args.duration} seconds")
+    logger.info(f"Model: {args.model}")
+    logger.info(f"Saving to: {args.output_dir}/")
+    logger.info("=" * 60)
 
     try:
-        # Etapa 1: Gravar áudio
-        print("\n📍 ETAPA 1/2: Gravando áudio do sistema...")
+        # Step 1: Record audio
+        logger.info("STEP 1/2: Recording system audio...")
         success = record_system_audio(
             audio_file,
             duration=args.duration,
@@ -76,13 +87,13 @@ def main():
         )
 
         if not success:
-            print("\n❌ Falha na gravação!")
+            logger.error("Recording failed!")
             sys.exit(1)
 
-        # Etapa 2: Transcrever
-        print("\n📍 ETAPA 2/2: Transcrevendo áudio...")
+        # Step 2: Transcribe
+        logger.info("STEP 2/2: Transcribing audio...")
 
-        # Criar objeto args para o processor
+        # Create args object for processor
         proc_args = Args(
             input_file=audio_file,
             output_file=text_file,
@@ -94,31 +105,31 @@ def main():
 
         process_input(proc_args)
 
-        # Mostrar resultado
-        print("\n" + "=" * 60)
-        print("✅ PROCESSAMENTO CONCLUÍDO!")
-        print("=" * 60)
+        # Show results
+        logger.info("=" * 60)
+        logger.success("PROCESSING COMPLETED!")
+        logger.info("=" * 60)
 
         with open(text_file, 'r', encoding='utf-8') as f:
-            transcricao = f.read()
+            transcription = f.read()
 
-        print(f"\n📄 Transcrição ({len(transcricao.split())} palavras):")
-        print("-" * 60)
-        print(transcricao)
-        print("-" * 60)
+        logger.info(f"Transcription ({len(transcription.split())} words):")
+        logger.info("-" * 60)
+        logger.info(transcription)
+        logger.info("-" * 60)
 
-        print(f"\n💾 Arquivos salvos:")
+        logger.info("Saved files:")
         if args.keep_audio or os.path.exists(audio_file):
-            print(f"   🎵 Áudio: {audio_file}")
-        print(f"   📝 Texto: {text_file}")
+            logger.info(f"   Audio: {audio_file}")
+        logger.info(f"   Text: {text_file}")
 
-        print("\n✨ Processo finalizado com sucesso!\n")
+        logger.success("Process completed successfully!")
 
     except KeyboardInterrupt:
-        print("\n\n⚠️ Processo interrompido pelo usuário")
+        logger.warning("Process interrupted by user")
         sys.exit(1)
     except Exception as e:
-        print(f"\n❌ Erro: {str(e)}")
+        logger.error(f"Error: {str(e)}")
         sys.exit(1)
 
 
