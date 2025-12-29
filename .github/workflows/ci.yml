@@ -19,14 +19,17 @@ jobs:
       - name: Set up Python
         run: uv python install 3.10
 
+      - name: Create virtual environment
+        run: uv venv
+
       - name: Install ruff
-        run: uv pip install --system ruff
+        run: uv pip install ruff
 
       - name: Run ruff linter
-        run: ruff check .
+        run: uv run ruff check .
 
       - name: Run ruff formatter check
-        run: ruff format --check .
+        run: uv run ruff format --check .
 
   type-check:
     name: Type Checking
@@ -40,11 +43,14 @@ jobs:
       - name: Set up Python
         run: uv python install 3.10
 
+      - name: Create virtual environment
+        run: uv venv
+
       - name: Install dependencies
-        run: uv pip install --system mypy -r requirements.txt
+        run: uv pip install mypy -r requirements.txt
 
       - name: Run mypy
-        run: mypy src/ --ignore-missing-imports
+        run: uv run mypy src/ --ignore-missing-imports
 
   test:
     name: Tests
@@ -62,16 +68,19 @@ jobs:
       - name: Set up Python ${{ matrix.python-version }}
         run: uv python install ${{ matrix.python-version }}
 
+      - name: Create virtual environment
+        run: uv venv
+
       - name: Install system dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y ffmpeg portaudio19-dev
 
       - name: Install Python dependencies
-        run: uv pip install --system -r requirements-dev.txt
+        run: uv pip install -r requirements-dev.txt
 
       - name: Run tests with coverage
-        run: pytest --cov=src --cov-report=xml --cov-report=term
+        run: uv run pytest --cov=src --cov-report=xml --cov-report=term
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
